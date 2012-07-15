@@ -50,3 +50,6 @@ colorscheme molokai
 
 set spelllang=en
 map <leader>s setlocal spell!<cr>
+"vim indent guides
+let g:indent_guides_start_level = 2
+let g:indent_guides_guide_size = 1
