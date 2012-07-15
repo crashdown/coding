@@ -15,7 +15,6 @@ set smartcase
 set bs=indent,eol,start
 set showmatch
 set hlsearch
-set number
 set incsearch
 set autoindent
 set et 
