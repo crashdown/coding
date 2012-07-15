@@ -1,13 +1,11 @@
-
 # Check for an interactive session
 [ -z "$PS1" ] && return
 
 export PATH=~/bin:$PATH
 export TERM=xterm-256color
-alias tunnel='echo Tunnel active. Use SOCKS4, Port 4000.;ssh -ND 4000 matt@smartmatt.co.uk'
 alias ls='ls --color=auto'
 alias l='ls'
-alias d='ssh dobbin'
+alias d='ssh matt@smartmatt.co.uk'
 alias ll='ls -la'
 alias tw='ssh -Y smartmj@tinky-winky.cs.bham.ac.uk'
 alias w='ssh -Y smartmj@wallace.cs.bham.ac.uk'
@@ -17,5 +15,5 @@ alias j='ssh joggler@joggler'
 alias gcc='gcc -Wall -Werror -std=gnu99 -D _GNU_SOURCE'
 alias open='xdg-open'
 alias hist='history|grep $1'
-PS1='[\A]\[\e[1;32m\]|\u@\h|\[\e[m\] \[\e[1;34m\]\w\[\e[m\] \[\e[1;32m\]\$\[\e[m\] '
+export PS1='[\A]\[\e[1;32m\]|\u@\h|\[\e[m\] \[\e[1;34m\]\w\[\e[m\] \[\e[1;32m\]\$\[\e[m\] '
 alias ogcc='gcc'
