@@ -1,0 +1,72 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use URI;
+use Web::Scraper;
+use MIME::Lite;
+
+# crap to get the date in a pretty format. This should be easier (and it may be).
+my @months = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+my @weekDays = qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday Sunday);
+my ($a, $b, $c, $dayOfMonth, $month, $yearOffset, $dayOfWeek, $dayOfYear, $daylightSavings) = gmtime();
+my $year = 1900 + $yearOffset;
+my $theGMTime = "$weekDays[$dayOfWeek] $months[$month] $dayOfMonth, $year";
+
+my $mailstring="<style type=text/css>.vs{background:red;color:white;}.s{background:#ff7e00;color:white;}.n{background:#ffcc00}</style>
+Hello Matt,<br/><br/>\n
+Here are the traffic incidents for <i>$theGMTime</i>:\n";
+
+my $incidents = scraper {
+    process "li.severity-5", "vsincidents[]" => scraper {
+        process ".item-details", body => 'TEXT';
+    };
+    process "li.severity-4", "sincidents[]" => scraper {
+        process ".item-details", body => 'TEXT';
+    };
+    process "li.severity-3", "bincidents[]" => scraper {
+        process ".item-details", body=>'TEXT';
+    };
+
+};
+
+# replace "m5" with the motorway of your choice...
+my $result = $incidents->scrape(URI->new("http://www.bbc.co.uk/travelnews/mobile/search/m5"));
+$mailstring.="<h2 class=vs>Very Severe Incidents</h2>\n";
+if(!defined @{$result->{vsincidents}}){
+    $mailstring .= "No very severe incidents.\n";
+}else{
+    for my $vsincident (@{$result->{vsincidents}}){
+        my ($motorwayloc,@details) = split "-",$vsincident->{body};
+        $mailstring .= "<b>$motorwayloc<\/b><br\/>@details<br/>\n";
+    }
+}
+$mailstring .= "<h2 class=s>Severe Incidents</h2>\n";
+if(!defined @{$result->{sincidents}}){
+    $mailstring .= "No Severe incidents.\n";
+}else{
+    for my $sincident (@{$result->{sincidents}}){
+        my ($motorwayloc,@details) = split "-",$sincident->{body};
+        $mailstring .= "<b>$motorwayloc<\/b><br\/>@details<br/>\n";
+    }
+}
+$mailstring .= "<h2 class=n>Not-so-Severe Incidents</h2>\n";
+if(!defined @{$result->{bincidents}}){
+    $mailstring .= "No Not-so-Severe incidents.\n";
+}else{
+    for my $bincident (@{$result->{bincidents}}){
+        my ($motorwayloc,@details) = split "-",$bincident->{body};
+        $mailstring .= "<b>$motorwayloc<\/b><br\/>@details<br/>\n";
+    }
+}
+$mailstring.="<br/><br/>Love,<br/>The Dobbin Traffic Mailer Daemon.";
+my $msg = MIME::Lite->new( 
+    From        =>  'traffic@mattsmart.co',
+    Type        =>  'text/html',
+    To          =>  'mail@mattsmart.co', 
+    Subject     =>  "M5 Traffic for $theGMTime", 
+    Data        =>  $mailstring,
+); 
+
+$msg->send or die "Failed to send email: $!";
+print "Sent traffic for $theGMTime to mail\@mattsmart.co.\n";
