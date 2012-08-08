@@ -1,0 +1,33 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <script type="text/javascript">
+            var base85 = "9jqo^BlbD-BleB1DJ+*+F(f,q/0JhKF<GL>Cj@.4Gp$d7F!,L7@<6@)/0JDEF<G%<+EV:2F!,O<DJ+*.@<*K0@<6L(Df-\\0Ec5e;DffZ(EZee.Bl.9pF\"AGXBPCsi+DGm>@3BB/F*&OCAfu2/AKYi(DIb:@FD,*)+C]U=@3BN#EcYf8ATD3s@q?d$AftVqCh[NqF<G:8+EV:.+Cf>-FD5W8ARlolDIal(DId<j@<?3r@:F%a+D58'ATD4$Bl@l3De:,-DJs`8ARoFb/0JMK@qB4^F!,R<AKZ&-DfTqBG%G>uD.RTpAKYo'+CT/5+Cei#DII?(E,9)oF*2M7/cYkO";
+            var output="";
+            var charsread=0;
+            var currentword=new Array(5);
+            for(var i=0; i<base85.length; i+=5){
+                currentword[0]=base85[i].charCodeAt()-33;
+                currentword[1]=base85[i+1].charCodeAt()-33;
+                currentword[2]=base85[i+2].charCodeAt()-33;
+                currentword[3]=base85[i+3].charCodeAt()-33;
+                currentword[4]=base85[i+4].charCodeAt()-33;
+
+                var total = currentword[0]*Math.pow(85,4)
+                    +currentword[1]*Math.pow(85,3)
+                    +currentword[2]*Math.pow(85,2)
+                    +currentword[3]*Math.pow(85,1)
+                    +currentword[4];
+                output += String.fromCharCode(Math.floor(total/Math.pow(256,3)));
+                total = total % Math.pow(256,3);
+                output += String.fromCharCode(Math.floor(total/Math.pow(256,2)));
+                total = total % Math.pow(256,2);
+                output += String.fromCharCode(Math.floor(total/Math.pow(256,1)));
+                total = total % Math.pow(256,1);
+                output += String.fromCharCode(total);
+            }
+document.write(output);
+</script>
+
+</html>
